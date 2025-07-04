@@ -1,0 +1,1 @@
+# Bible module initialization
