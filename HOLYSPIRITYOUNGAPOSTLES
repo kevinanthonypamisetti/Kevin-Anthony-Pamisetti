@@ -1,0 +1,89 @@
+import { useState, useEffect } from 'react';
+import { Card, CardContent } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
+import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
+import { motion } from 'framer-motion';
+
+export default function CatholicWebsite() {
+  const [confessions, setConfessions] = useState([]);
+  const [dailyVerse, setDailyVerse] = useState('"I can do all things through Christ who strengthens me." - Philippians 4:13');
+  const [adminPosts, setAdminPosts] = useState([]);
+  const [newPost, setNewPost] = useState('');
+  const [privateMessage, setPrivateMessage] = useState('');
+
+  const handleAddConfession = (confession) => {
+    setConfessions([...confessions, { text: confession, approved: false }]);
+  };
+
+  const handleApproveConfession = (index) => {
+    const updated = [...confessions];
+    updated[index].approved = true;
+    setConfessions(updated);
+  };
+
+  const handleAddPost = () => {
+    if (newPost.trim() !== '') {
+      setAdminPosts([...adminPosts, newPost]);
+      setNewPost('');
+    }
+  };
+
+  return (
+    <div className="p-6 bg-gray-50 min-h-screen">
+      <h1 className="text-3xl font-bold text-center mb-4">Catholic Faith Hub</h1>
+
+      <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="mb-6">
+        <Card className="text-center">
+          <CardContent>
+            <p className="text-xl italic">{dailyVerse}</p>
+          </CardContent>
+        </Card>
+      </motion.div>
+
+      <Tabs defaultValue="confessions" className="w-full">
+        <TabsList className="grid grid-cols-3">
+          <TabsTrigger value="confessions">Confessions</TabsTrigger>
+          <TabsTrigger value="admin">Admin Posts</TabsTrigger>
+          <TabsTrigger value="messages">Private Messages</TabsTrigger>
+        </TabsList>
+
+        <TabsContent value="confessions">
+          <Card className="p-4 mt-4">
+            <h2 className="text-2xl mb-2">Submit Your Confession</h2>
+            <Textarea placeholder="Write your confession here..." onBlur={(e) => handleAddConfession(e.target.value)} />
+            <h3 className="text-xl mt-4 mb-2">Confessions (Admin View)</h3>
+            {confessions.map((c, i) => (
+              <div key={i} className="border rounded p-2 mb-2">
+                <p>{c.text}</p>
+                <p className="text-sm text-gray-500">{c.approved ? 'Approved' : 'Pending'}</p>
+                {!c.approved && <Button onClick={() => handleApproveConfession(i)} className="mt-2">Approve</Button>}
+              </div>
+            ))}
+          </Card>
+>
+        </TabsContent>
+
+        <TabsContent value="admin">
+          <Card className="p-4 mt-4">
+            <h2 className="text-2xl mb-2">Admin: Post Something</h2>
+            <Textarea placeholder="Write your message here..." value={newPost} onChange={(e) => setNewPost(e.target.value)} />
+            <Button onClick={handleAddPost} className="mt-2">Post</Button>
+            <div className="mt-4">
+              {adminPosts.map((post, i) => (
+                <div key={i} className="border rounded p-2 mb-2">
+                  <p>{post}</p>
+                </div>
+              ))}
+            </div>
+          </Card>
+        </TabsContent>
+
+        <TabsContent value="messages">
+          <Card className="p-4 mt-4">
+            <h2 className="text-2xl mb-2">Send Private Message to Admin</h2>
+            <Textarea placeholder="Your message..." value={privateMessage} onChange={(e) => setPrivateMessage(e.target.value)} />
+            <Button className="mt-2">Send</Button>
+          </Card>
+        </TabsContent>
